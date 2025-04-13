@@ -1,8 +1,6 @@
-use apl_error::lexerror::LexErrorType;
+use crate::tokens::Token;
 
-use crate::tokens::{Token, TokenType};
-
-use super::super::{Scanner, ScannerMode};
+use super::super::Scanner;
 
 impl<'a> Scanner<'a> {
     pub(crate) fn scan_block_comment(&mut self) -> Option<Token> {
@@ -24,7 +22,7 @@ impl<'a> Scanner<'a> {
         while let Some(c) = self.advance() {
             match c {
                 '\n' => break,
-                _ => {},
+                _ => {}
             }
         }
         None
