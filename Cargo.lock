@@ -5,3 +5,23 @@ version = 4
 [[package]]
 name = "apl"
 version = "0.1.0"
+dependencies = [
+ "apl_error",
+ "apl_parser",
+ "apl_scanner",
+]
+
+[[package]]
+name = "apl_error"
+version = "0.1.0"
+
+[[package]]
+name = "apl_parser"
+version = "0.1.0"
+
+[[package]]
+name = "apl_scanner"
+version = "0.1.0"
+dependencies = [
+ "apl_error",
+]
