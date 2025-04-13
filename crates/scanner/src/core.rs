@@ -18,7 +18,7 @@ pub struct Scanner<'a> {
     pub current_lexeme: String,
 
     // Position tracking
-    pub position: Position,
+    position: Position,
     pub current_char: Option<char>,
     pub start_line: usize,
     pub start_column: usize,
@@ -27,13 +27,13 @@ pub struct Scanner<'a> {
     pub errors: Vec<LexError>,
 
     // State flag
-    pub mode: ScannerMode,
+    mode: ScannerMode,
     // Original source for error context
     pub source: &'a str,
 }
 
 impl<'a> Scanner<'a> {
-    pub(crate) fn new(source: &'a str) -> Self {
+    pub fn new(source: &'a str) -> Self {
         assert!(!source.is_empty(), "Scanner source cannot be empty");
 
         Self {
@@ -49,7 +49,7 @@ impl<'a> Scanner<'a> {
         }
     }
 
-    pub(crate) fn scan_tokens(&mut self) -> Vec<Token> {
+    pub fn scan_tokens(&mut self) -> Vec<Token> {
         let mut tokens: Vec<Token> = Vec::new();
 
         while !self.is_at_end() {
@@ -72,6 +72,10 @@ impl<'a> Scanner<'a> {
         tokens
     }
 
+    pub(crate) fn set_scanner_mode(&mut self, mode: ScannerMode) {
+        self.mode = mode;
+    }
+
     pub(crate) fn advance(&mut self) -> Option<char> {
         let c = self.chars.next()?;
         self.current_char = Some(c);
@@ -89,21 +93,13 @@ impl<'a> Scanner<'a> {
 
     pub(crate) fn is_at_end(&mut self) -> bool {
         match self.peek() {
-            Some(c) => false,
+            Some(_) => false,
             None => true,
         }
     }
 
     pub(crate) fn peek(&mut self) -> Option<char> {
         self.chars.peek().copied()
-    }
-
-    pub(crate) fn peek_n(&mut self, n: usize) -> Option<char> {
-        let mut clone = self.chars.clone();
-        for _ in 0..n - 1 {
-            clone.next();
-        }
-        clone.next()
     }
 
     pub(crate) fn start_token(&mut self) {

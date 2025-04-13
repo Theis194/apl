@@ -23,36 +23,36 @@ impl<'a> Scanner<'a> {
 
             c if c.is_digit(10) => {
                 self.scan_number();
-                Some(self.end_token(TokenType::Number))
+                Some(self.end_token(TokenType::Number(self.current_lexeme.clone())))
             }
 
             '"' => {
-                self.mode = ScannerMode::StringLiteral;
+                self.set_scanner_mode(ScannerMode::StringLiteral);
                 None
             }
 
             '\'' => {
-                self.mode = ScannerMode::CharLiteral;
+                self.set_scanner_mode(ScannerMode::CharLiteral);
                 None
             }
 
             '+' => Some(self.end_token(TokenType::Plus)),
             '-' => Some(self.end_token(TokenType::Minus)),
             '*' => Some(self.end_token(TokenType::Multiply)),
-            '%' => Some(self.end_token(TokenType::Divide)),
+            '%' => Some(self.end_token(TokenType::Modulo)),
             '/' => {
                 if let Some('*') = self.peek() {
                     self.advance();
-                    self.mode = ScannerMode::BlockComment;
+                    self.set_scanner_mode(ScannerMode::BlockComment);
                     None
                 } else if let Some('/') = self.peek() {
                     self.advance();
-                    self.mode = ScannerMode::LineComment;
+                    self.set_scanner_mode(ScannerMode::LineComment);
                     None
                 } else {
                     Some(self.end_token(TokenType::Divide))
                 }
-            }
+            },
 
             '=' => {
                 if let Some('=') = self.peek() {
@@ -61,7 +61,7 @@ impl<'a> Scanner<'a> {
                 } else {
                     Some(self.end_token(TokenType::Equals))
                 }
-            }
+            },
 
             '!' => {
                 if let Some('=') = self.peek() {
@@ -70,7 +70,7 @@ impl<'a> Scanner<'a> {
                 } else {
                     Some(self.end_token(TokenType::Bang))
                 }
-            }
+            },
 
             '>' => {
                 if let Some('=') = self.peek() {
@@ -79,7 +79,7 @@ impl<'a> Scanner<'a> {
                 } else {
                     Some(self.end_token(TokenType::GreaterThan))
                 }
-            }
+            },
 
             '<' => {
                 if let Some('=') = self.peek() {
@@ -88,7 +88,11 @@ impl<'a> Scanner<'a> {
                 } else {
                     Some(self.end_token(TokenType::LessThan))
                 }
-            }
+            },
+
+            ';' => {
+                Some(self.end_token(TokenType::SemiColon))
+            },
 
             _ => {
                 self.record_error(LexErrorType::UnexpectedCharacter(c));

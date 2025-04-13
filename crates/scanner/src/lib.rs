@@ -3,9 +3,10 @@ mod modes;
 mod position;
 mod tokens;
 
-use core::{Scanner, ScannerMode};
+pub use core::Scanner;
+use core::ScannerMode;
 use position::Position;
-use tokens::{Token, TokenType};
+pub use tokens::{Token, TokenType};
 
 #[cfg(test)]
 mod tests {
@@ -53,7 +54,8 @@ mod tests {
                 TokenType::Let,
                 TokenType::Identifier,
                 TokenType::Equals,
-                TokenType::Number
+                TokenType::Number("10".to_string()),
+                TokenType::SemiColon,
             ]
         )
     }
@@ -73,14 +75,15 @@ mod tests {
                 TokenType::Let,
                 TokenType::Identifier,
                 TokenType::Equals,
-                TokenType::Number
+                TokenType::Number("10.0".to_string()),
+                TokenType::SemiColon,
             ]
         )
     }
 
     #[test]
     fn scan_variable_declaration_string_literal() {
-        let mut scanner = Scanner::new(r#"let a = "test""#);
+        let mut scanner = Scanner::new(r#"let a = "test";"#);
 
         let tokens: Vec<TokenType> = scanner
             .scan_tokens()
@@ -93,7 +96,8 @@ mod tests {
                 TokenType::Let,
                 TokenType::Identifier,
                 TokenType::Equals,
-                TokenType::String("test".to_string())
+                TokenType::String("test".to_string()),
+                TokenType::SemiColon,
             ]
         )
     }
@@ -106,7 +110,12 @@ mod tests {
         // Should still produce valid tokens despite error
         assert_eq!(
             tokens.iter().map(|t| &t.token_type).collect::<Vec<_>>(),
-            vec![&TokenType::Let, &TokenType::Identifier, &TokenType::Equals,]
+            vec![
+                &TokenType::Let,
+                &TokenType::Identifier,
+                &TokenType::Equals,
+                &TokenType::SemiColon,
+            ]
         );
 
         // Verify error

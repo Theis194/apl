@@ -2,7 +2,7 @@
 pub enum TokenType {
     Let,
     Identifier,
-    Number,
+    Number(String),
     String(String),
     Char(char),
     Equals,
@@ -22,7 +22,6 @@ pub enum TokenType {
     For,
     While,
     SemiColon,
-    Eof,
 }
 
 #[derive(Debug, PartialEq)]

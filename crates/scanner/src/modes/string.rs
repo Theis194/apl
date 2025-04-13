@@ -40,7 +40,7 @@ impl<'a> Scanner<'a> {
             self.record_error(LexErrorType::UnterminatedString);
         }
 
-        self.mode = ScannerMode::Normal;
+        self.set_scanner_mode(ScannerMode::Normal);
 
         Some(self.end_token(TokenType::String(value)))
     }
