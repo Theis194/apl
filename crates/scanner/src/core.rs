@@ -32,6 +32,33 @@ pub struct Scanner<'a> {
     pub source: &'a str,
 }
 
+#[macro_export]
+macro_rules! match_operator {
+    ($self:ident, $op:literal, $next:literal, $double:ident, $single:ident) => {
+        if let Some($next) = $self.peek() {
+            $self.advance();
+            Some($self.end_token(TokenType::$double))
+        } else {
+            Some($self.end_token(TokenType::$single))
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! simple_token {
+    ($self:ident, $token:ident) => {
+        Some($self.end_token(TokenType::$token))
+    };
+}
+
+#[macro_export]
+macro_rules! transition_mode {
+    ($self:ident, $mode:ident) => {{
+        $self.set_scanner_mode(ScannerMode::$mode);
+        None
+    }};
+}
+
 impl<'a> Scanner<'a> {
     pub fn new(source: &'a str) -> Self {
         assert!(!source.is_empty(), "Scanner source cannot be empty");

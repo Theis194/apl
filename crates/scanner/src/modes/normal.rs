@@ -1,6 +1,6 @@
 use apl_error::lexerror::LexErrorType;
 
-use crate::tokens::{Token, TokenType};
+use crate::{match_operator, simple_token, tokens::{Token, TokenType}, transition_mode};
 
 use super::super::{Scanner, ScannerMode};
 
@@ -19,27 +19,28 @@ impl<'a> Scanner<'a> {
                 self.scan_identifier();
                 let token_type = self.identify_keyword();
                 Some(self.end_token(token_type))
-            }
+            },
 
             c if c.is_digit(10) => {
                 self.scan_number();
                 Some(self.end_token(TokenType::Number(self.current_lexeme.clone())))
-            }
+            },
 
-            '"' => {
-                self.set_scanner_mode(ScannerMode::StringLiteral);
-                None
-            }
+            '"' => transition_mode!(self, StringLiteral),
+            '\'' => transition_mode!(self, CharLiteral),
 
-            '\'' => {
-                self.set_scanner_mode(ScannerMode::CharLiteral);
-                None
-            }
-
-            '+' => Some(self.end_token(TokenType::Plus)),
-            '-' => Some(self.end_token(TokenType::Minus)),
-            '*' => Some(self.end_token(TokenType::Multiply)),
-            '%' => Some(self.end_token(TokenType::Modulo)),
+            '+' => simple_token!(self, Plus),
+            '-' => simple_token!(self, Minus),
+            '*' => simple_token!(self, Multiply),
+            '%' => simple_token!(self, Modulo),
+            ';' => simple_token!(self, SemiColon),
+            '{' => simple_token!(self, CurlyOpen),
+            '}' => simple_token!(self, CurlyClose),
+            '[' => simple_token!(self, BracketOpen),
+            ']' => simple_token!(self, BracketClose),
+            '(' => simple_token!(self, ParenthesesOpen),
+            ')' => simple_token!(self, ParenthesesClose),
+            
             '/' => {
                 if let Some('*') = self.peek() {
                     self.advance();
@@ -54,45 +55,10 @@ impl<'a> Scanner<'a> {
                 }
             },
 
-            '=' => {
-                if let Some('=') = self.peek() {
-                    self.advance();
-                    Some(self.end_token(TokenType::EqualsEquals))
-                } else {
-                    Some(self.end_token(TokenType::Equals))
-                }
-            },
-
-            '!' => {
-                if let Some('=') = self.peek() {
-                    self.advance();
-                    Some(self.end_token(TokenType::BangEquals))
-                } else {
-                    Some(self.end_token(TokenType::Bang))
-                }
-            },
-
-            '>' => {
-                if let Some('=') = self.peek() {
-                    self.advance();
-                    Some(self.end_token(TokenType::GreaterThanOrEqual))
-                } else {
-                    Some(self.end_token(TokenType::GreaterThan))
-                }
-            },
-
-            '<' => {
-                if let Some('=') = self.peek() {
-                    self.advance();
-                    Some(self.end_token(TokenType::LessThanOrEqual))
-                } else {
-                    Some(self.end_token(TokenType::LessThan))
-                }
-            },
-
-            ';' => {
-                Some(self.end_token(TokenType::SemiColon))
-            },
+            '=' => match_operator!(self, '=', '=', EqualsEquals, Equals),
+            '!' => match_operator!(self, '!', '=', BangEquals, Bang),
+            '>' => match_operator!(self, '>', '=', GreaterThanOrEqual, GreaterThan),
+            '<' => match_operator!(self, '<', '=', LessThanOrEqual, LessThan),
 
             _ => {
                 self.record_error(LexErrorType::UnexpectedCharacter(c));

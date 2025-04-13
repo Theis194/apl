@@ -21,6 +21,12 @@ pub enum TokenType {
     If,
     For,
     While,
+    CurlyOpen,
+    CurlyClose,
+    BracketOpen,
+    BracketClose,
+    ParenthesesOpen,
+    ParenthesesClose,
     SemiColon,
 }
 
