@@ -15,4 +15,7 @@ pub enum LexErrorType {
     MalformedNumber,
     TooManyDecimalPoints,
     TrailingDecimalPoint,
+    EmptyCharLiteral,
+    UnterminatedChar,
+    TooManyChars,
 }

@@ -1,7 +1,9 @@
+mod core;
+mod modes;
 mod position;
-mod scanner;
 mod tokens;
 
+use core::{Scanner, ScannerMode};
 use position::Position;
 use tokens::{Token, TokenType};
 
@@ -9,7 +11,6 @@ use tokens::{Token, TokenType};
 mod tests {
     use super::*;
     use apl_error::lexerror::*;
-    use scanner::Scanner;
 
     // Helper to get errors from scanning
     fn scan_with_errors(source: &str) -> (Vec<Token>, Vec<LexError>) {
@@ -166,5 +167,39 @@ let y = "unclosde"#;
 
         // Second error (line 3)
         assert_has_error(&errors, LexErrorType::UnterminatedString, 3, 19);
+    }
+
+    #[test]
+    fn char_literals() {
+        let mut scanner = Scanner::new("'a'");
+        assert_eq!(
+            scanner.scan_char_literal().unwrap().token_type,
+            TokenType::Char('a')
+        );
+
+        let mut scanner = Scanner::new("'\\n'");
+        assert_eq!(
+            scanner.scan_char_literal().unwrap().token_type,
+            TokenType::Char('\n')
+        );
+
+        // Error cases
+        let mut scanner = Scanner::new("''");
+        scanner.scan_char_literal();
+        assert!(
+            scanner
+                .errors
+                .iter()
+                .any(|e| matches!(e.error_type, LexErrorType::EmptyCharLiteral))
+        );
+
+        let mut scanner = Scanner::new("'ab'");
+        scanner.scan_char_literal();
+        assert!(
+            scanner
+                .errors
+                .iter()
+                .any(|e| matches!(e.error_type, LexErrorType::TooManyChars))
+        );
     }
 }

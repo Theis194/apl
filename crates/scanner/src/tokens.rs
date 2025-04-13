@@ -4,13 +4,24 @@ pub enum TokenType {
     Identifier,
     Number,
     String(String),
+    Char(char),
     Equals,
     EqualsEquals,
     BangEquals,
     Bang,
     Plus,
     Minus,
+    Multiply,
+    Divide,
+    Modulo,
+    LessThan,
+    LessThanOrEqual,
+    GreaterThan,
+    GreaterThanOrEqual,
     If,
+    For,
+    While,
+    SemiColon,
     Eof,
 }
 
@@ -20,10 +31,4 @@ pub struct Token {
     pub lexeme: String,
     pub line: usize,
     pub column: usize,
-}
-
-impl Token {
-    pub fn is_eof(&self) -> bool {
-        self.token_type == TokenType::Eof
-    }
 }
