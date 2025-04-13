@@ -15,20 +15,24 @@ impl<'a> Scanner<'a> {
         let c = self.advance().unwrap();
 
         match c {
+            // Scans keywords and identifiers
             c if c.is_alphabetic() => {
                 self.scan_identifier();
                 let token_type = self.identify_keyword();
                 Some(self.end_token(token_type))
             },
 
+            // Scans numbers floating point and integers
             c if c.is_digit(10) => {
                 self.scan_number();
                 Some(self.end_token(TokenType::Number(self.current_lexeme.clone())))
             },
 
+            // Switches mode to StringLiteral or CharLiteral
             '"' => transition_mode!(self, StringLiteral),
             '\'' => transition_mode!(self, CharLiteral),
 
+            // Handles operators and brackets
             '+' => simple_token!(self, Plus),
             '-' => simple_token!(self, Minus),
             '*' => simple_token!(self, Multiply),
@@ -40,7 +44,14 @@ impl<'a> Scanner<'a> {
             ']' => simple_token!(self, BracketClose),
             '(' => simple_token!(self, ParenthesesOpen),
             ')' => simple_token!(self, ParenthesesClose),
+
+            // Handles equality/inequality 
+            '=' => match_operator!(self, '=', '=', EqualsEquals, Equals),
+            '!' => match_operator!(self, '!', '=', BangEquals, Bang),
+            '>' => match_operator!(self, '>', '=', GreaterThanOrEqual, GreaterThan),
+            '<' => match_operator!(self, '<', '=', LessThanOrEqual, LessThan),
             
+            // Handles comments and divition
             '/' => {
                 if let Some('*') = self.peek() {
                     self.advance();
@@ -55,11 +66,7 @@ impl<'a> Scanner<'a> {
                 }
             },
 
-            '=' => match_operator!(self, '=', '=', EqualsEquals, Equals),
-            '!' => match_operator!(self, '!', '=', BangEquals, Bang),
-            '>' => match_operator!(self, '>', '=', GreaterThanOrEqual, GreaterThan),
-            '<' => match_operator!(self, '<', '=', LessThanOrEqual, LessThan),
-
+            // Handles unexpected characters
             _ => {
                 self.record_error(LexErrorType::UnexpectedCharacter(c));
                 None
