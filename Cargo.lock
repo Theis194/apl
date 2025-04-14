@@ -18,6 +18,9 @@ version = "0.1.0"
 [[package]]
 name = "apl_parser"
 version = "0.1.0"
+dependencies = [
+ "apl_scanner",
+]
 
 [[package]]
 name = "apl_scanner"

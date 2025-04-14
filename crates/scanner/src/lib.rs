@@ -56,6 +56,7 @@ mod tests {
                 TokenType::Equals,
                 TokenType::Number("10".to_string()),
                 TokenType::SemiColon,
+                TokenType::Eof,
             ]
         )
     }
@@ -77,6 +78,7 @@ mod tests {
                 TokenType::Equals,
                 TokenType::Number("10.0".to_string()),
                 TokenType::SemiColon,
+                TokenType::Eof,
             ]
         )
     }
@@ -98,6 +100,7 @@ mod tests {
                 TokenType::Equals,
                 TokenType::String("test".to_string()),
                 TokenType::SemiColon,
+                TokenType::Eof,
             ]
         )
     }
@@ -115,6 +118,7 @@ mod tests {
                 &TokenType::Identifier("a".to_string()),
                 &TokenType::Equals,
                 &TokenType::SemiColon,
+                &TokenType::Eof,
             ]
         );
 
@@ -142,7 +146,8 @@ mod tests {
         let (tokens, errors) = scan_with_errors(r#"let s = "unterminated"#);
 
         assert_eq!(
-            tokens.last().unwrap().token_type,
+            // Takes second last token as last token is Eof
+            tokens.iter().nth(tokens.len() - 2).unwrap().token_type,
             TokenType::String("unterminated".to_string())
         );
         assert_has_error(&errors, LexErrorType::UnterminatedString, 1, 22);
@@ -162,6 +167,7 @@ mod tests {
                 &TokenType::If,
                 &TokenType::Bang,
                 &TokenType::Identifier("true".to_string()),
+                &TokenType::Eof,
             ]
         );
         assert!(errors.is_empty()); // This is actually valid syntax
@@ -238,6 +244,7 @@ let y = "unclosde"#;
                 TokenType::Comma,
                 TokenType::Number("3".to_string()),
                 TokenType::BracketClose,
+                TokenType::Eof,
             ]
         )
     }

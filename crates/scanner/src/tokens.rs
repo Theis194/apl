@@ -30,6 +30,7 @@ pub enum TokenType {
     SemiColon,
     Dot,
     Comma,
+    Eof,
 }
 
 #[derive(Debug, PartialEq)]
