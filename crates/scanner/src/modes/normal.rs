@@ -38,6 +38,8 @@ impl<'a> Scanner<'a> {
             '*' => simple_token!(self, Multiply),
             '%' => simple_token!(self, Modulo),
             ';' => simple_token!(self, SemiColon),
+            '.' => simple_token!(self, Dot),
+            ',' => simple_token!(self, Comma),
             '{' => simple_token!(self, CurlyOpen),
             '}' => simple_token!(self, CurlyClose),
             '[' => simple_token!(self, BracketOpen),

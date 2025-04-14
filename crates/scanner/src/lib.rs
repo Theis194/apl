@@ -52,7 +52,7 @@ mod tests {
             tokens,
             vec![
                 TokenType::Let,
-                TokenType::Identifier,
+                TokenType::Identifier("a".to_string()),
                 TokenType::Equals,
                 TokenType::Number("10".to_string()),
                 TokenType::SemiColon,
@@ -73,7 +73,7 @@ mod tests {
             tokens,
             vec![
                 TokenType::Let,
-                TokenType::Identifier,
+                TokenType::Identifier("a".to_string()),
                 TokenType::Equals,
                 TokenType::Number("10.0".to_string()),
                 TokenType::SemiColon,
@@ -94,7 +94,7 @@ mod tests {
             tokens,
             vec![
                 TokenType::Let,
-                TokenType::Identifier,
+                TokenType::Identifier("a".to_string()),
                 TokenType::Equals,
                 TokenType::String("test".to_string()),
                 TokenType::SemiColon,
@@ -112,7 +112,7 @@ mod tests {
             tokens.iter().map(|t| &t.token_type).collect::<Vec<_>>(),
             vec![
                 &TokenType::Let,
-                &TokenType::Identifier,
+                &TokenType::Identifier("a".to_string()),
                 &TokenType::Equals,
                 &TokenType::SemiColon,
             ]
@@ -158,7 +158,11 @@ mod tests {
         let (tokens, errors) = scan_with_errors("if !true");
         assert_eq!(
             tokens.iter().map(|t| &t.token_type).collect::<Vec<_>>(),
-            vec![&TokenType::If, &TokenType::Bang, &TokenType::Identifier,]
+            vec![
+                &TokenType::If,
+                &TokenType::Bang,
+                &TokenType::Identifier("true".to_string()),
+            ]
         );
         assert!(errors.is_empty()); // This is actually valid syntax
     }
@@ -210,5 +214,51 @@ let y = "unclosde"#;
                 .iter()
                 .any(|e| matches!(e.error_type, LexErrorType::TooManyChars))
         );
+    }
+
+    #[test]
+    fn array() {
+        let mut scanner = Scanner::new("let a = [1,2,3]");
+        let tokens: Vec<TokenType> = scanner
+            .scan_tokens()
+            .iter()
+            .map(|t| t.token_type.clone())
+            .collect();
+
+        assert_eq!(
+            tokens,
+            vec![
+                TokenType::Let,
+                TokenType::Identifier("a".to_string()),
+                TokenType::Equals,
+                TokenType::BracketOpen,
+                TokenType::Number("1".to_string()),
+                TokenType::Comma,
+                TokenType::Number("2".to_string()),
+                TokenType::Comma,
+                TokenType::Number("3".to_string()),
+                TokenType::BracketClose,
+            ]
+        )
+    }
+
+    fn object_function_call() {
+        let mut scanner = Scanner::new("obj.func1()");
+        let tokens: Vec<TokenType> = scanner
+            .scan_tokens()
+            .iter()
+            .map(|t| t.token_type.clone())
+            .collect();
+
+        assert_eq!(
+            tokens,
+            vec![
+                TokenType::Identifier("obj".to_string()),
+                TokenType::Dot,
+                TokenType::Identifier("func1".to_string()),
+                TokenType::ParenthesesOpen,
+                TokenType::ParenthesesClose,
+            ]
+        )
     }
 }

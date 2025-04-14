@@ -1,7 +1,7 @@
 #[derive(Debug, PartialEq, Clone)]
 pub enum TokenType {
     Let,
-    Identifier,
+    Identifier(String),
     Number(String),
     String(String),
     Char(char),
@@ -28,6 +28,8 @@ pub enum TokenType {
     ParenthesesOpen,
     ParenthesesClose,
     SemiColon,
+    Dot,
+    Comma,
 }
 
 #[derive(Debug, PartialEq)]
