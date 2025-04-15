@@ -1,13 +1,12 @@
-
-trait AstNode {
-    fn visit();
-    fn accept();    
+pub trait AstNode {
+    fn visit(&self);
+    fn accept(&self);
 }
 
-trait Expression {
+pub trait Statement: AstNode {
+    fn execute(&self);
+}
+
+pub trait Expression {
     fn eval();
-}
-
-trait Statement {
-
 }

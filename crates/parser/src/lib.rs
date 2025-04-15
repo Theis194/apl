@@ -1,6 +1,10 @@
 pub mod ast;
 pub mod core;
+mod declarations;
+mod expressions;
+mod statements;
 
-use ast::Literal;
-use ast::{VariableDecl, Variable};
-use ast::{Expr, Stmt};
+use ast::{BinaryExpr, BinaryOp};
+use ast::{Expr, Literal, Stmt};
+use ast::{Variable, VariableDecl};
+use core::Parser;

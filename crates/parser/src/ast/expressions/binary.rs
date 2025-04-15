@@ -1,17 +1,13 @@
 use apl_scanner::TokenType;
+use apl_derive::New;
 
 use super::Expr;
 
+#[derive(New)]
 pub struct BinaryExpr {
     left: Box<Expr>,
     op: BinaryOp,
     right: Box<Expr>,
-}
-
-impl BinaryExpr {
-    pub fn new(left: Box<Expr>, op: BinaryOp, right: Box<Expr>) -> Self {
-        Self { left, op, right }
-    }
 }
 
 pub enum BinaryOp {

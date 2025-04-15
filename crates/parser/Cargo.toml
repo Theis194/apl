@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 apl_scanner = { path = "../scanner" }
+apl_derive = { path = "../apl_derive" }

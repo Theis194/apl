@@ -5,9 +5,10 @@ edition = "2024"
 
 [workspace]
 resolver = "2"
-members = ["crates/scanner", "crates/parser", "crates/error"]
+members = ["crates/scanner", "crates/parser", "crates/error", "crates/apl_derive"]
 
 [dependencies]
 apl_scanner = { path = "./crates/scanner" }
 apl_parser = { path = "./crates/parser" }
 apl_error = { path = "./crates/error" }
+apl_derive = { path = "./crates/apl_derive" }
