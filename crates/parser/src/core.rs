@@ -1,4 +1,11 @@
+use std::result;
+
 use apl_scanner::{Token, TokenType};
+
+use crate::ast::{BinaryExpr, BinaryOp};
+
+use super::{Expr, Literal, Stmt};
+use super::{Variable, VariableDecl};
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -11,8 +18,102 @@ impl Parser {
     }
 
     // Should return an AST
-    pub fn parse() {
+    pub fn parse(&mut self) -> Vec<Stmt> {
+        let mut statements = Vec::new();
 
+        while !self.is_at_end() {
+            if let Some(stmt) = self.declaration() {
+                statements.push(stmt);
+            }
+        }
+
+        statements
+    }
+
+    fn declaration(&mut self) -> Option<Stmt> {
+        let result = if self.check(TokenType::Let) {
+            self.variable_declaration()
+        } else {
+            self.statement()
+        };
+
+        result.ok()
+    }
+
+    fn variable_declaration(&mut self) -> Result<Stmt, String> {
+        self.advance(); // Consume let
+
+        let name = match self.consume(
+            TokenType::Identifier("".to_string()),
+            "Expected variable name",
+        ) {
+            Ok(Token {
+                token_type: TokenType::Identifier(name),
+                ..
+            }) => name.clone(),
+            _ => return Err("Expected identifier".to_string()),
+        };
+
+        self.consume(TokenType::Equals, "Expected '=' after variable name")?;
+
+        let initializer = self.expression()?;
+
+        self.consume(
+            TokenType::SemiColon,
+            "Expected ';' after variable declaration",
+        )?;
+
+        Ok(Stmt::VariableDecl(VariableDecl::new(name, initializer)))
+    }
+
+    fn statement(&mut self) -> Result<Stmt, String> {
+        let identifier = self.consume(TokenType::Identifier("".to_string()), "Expected an identifier");
+
+        match &self.peek().token_type {
+            TokenType::ParenthesesOpen => {
+                // This is a function/function call
+                todo!()
+            },
+            _ => {
+                Err("Unexpected statement".to_string())
+            }
+        }
+    }
+
+    fn expression(&mut self) -> Result<Expr, String> {
+        self.equality()
+    }
+
+    fn equality(&mut self) -> Result<Expr, String> {
+        let mut expr = self.primary()?;
+
+        while self.check(TokenType::EqualsEquals) || self.check(TokenType::BangEquals) {
+            let operator = self.advance().clone();
+            let right = self.primary()?;
+            expr = Expr::Binary(BinaryExpr::new(
+                Box::new(expr),
+                BinaryOp::new(operator.token_type)?,
+                Box::new(right),
+            ))
+        }
+
+        Ok(expr)
+    }
+
+    fn primary(&mut self) -> Result<Expr, String> {
+        match &self.peek().token_type {
+            TokenType::Number(n) => {
+                let num = n.parse().unwrap();
+                self.advance();
+                Ok(Expr::Literal(Literal::Integer(num)))
+            }
+            TokenType::Identifier(name) => {
+                let name_clone = name.clone();
+                self.advance();
+                Ok(Expr::Variable(Variable { name: name_clone }))
+            }
+            _ => Err("Expected expression".to_string()),
+        }
     }
 
     fn peek(&self) -> &Token {

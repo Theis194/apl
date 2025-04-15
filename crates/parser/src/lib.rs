@@ -1,10 +1,6 @@
+pub mod ast;
 pub mod core;
 
-trait AstNode {
-    fn visit();
-    fn accept();    
-}
-
-trait Expression {
-    fn eval();
-}
+use ast::Literal;
+use ast::{VariableDecl, Variable};
+use ast::{Expr, Stmt};
