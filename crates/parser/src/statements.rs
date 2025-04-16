@@ -1,7 +1,8 @@
-use crate::ast::{Expr, Function, Variable};
+use std::process::id;
+
+use crate::ast::{Function, VariableDecl};
 
 use super::{Parser, Stmt};
-use crate::ast::node::{AstNode, Expression, Statement};
 use apl_scanner::{Token, TokenType};
 
 impl Parser {
@@ -22,7 +23,8 @@ impl Parser {
                 } else {
                     self.parse_assignment_or_expression()
                 }
-            }
+            },
+            TokenType::Let => self.parse_variable_declaration(),
             _ => Err("Unexpected statement".to_string()),
         }
     }
@@ -30,13 +32,7 @@ impl Parser {
     fn parse_function_declaration(&mut self) -> Result<Stmt, String> {
         self.consume(TokenType::Function, "Expected function keyword")?;
 
-        let ident = self
-            .consume(
-                TokenType::Identifier("".to_string()),
-                "Expected function identifier",
-            )?
-            .lexeme
-            .clone();
+        let ident = self.parse_identifier("Expected function name")?;
 
         let mut params = Vec::new();
 
@@ -55,10 +51,10 @@ impl Parser {
             };
             params.push(param.clone());
 
-            if !self.check(TokenType::Comma) && !self.check(TokenType::ParenthesesClose) {
+            if !self.check(&TokenType::Comma) && !self.check(&TokenType::ParenthesesClose) {
                 return Err("Expected ',' or ')' after parameter".to_string());
             }
-            if self.check(TokenType::Comma) {
+            if self.check(&TokenType::Comma) {
                 self.advance(); // Consume comma
             }
         }
@@ -79,5 +75,17 @@ impl Parser {
 
     fn parse_assignment_or_expression(&mut self) -> Result<Stmt, String> {
         todo!()
+    }
+
+    fn parse_variable_declaration(&mut self) -> Result<Stmt, String> {
+        self.consume(TokenType::Let, "Expected keyword 'let'")?;
+
+        let name = self.parse_identifier("Expected variable name")?;
+
+        self.consume(TokenType::Equals, "Expected '='")?;
+
+        let initializer = self.parse_expression()?;
+
+        Ok(Stmt::VariableDecl(VariableDecl::new(name, initializer)))
     }
 }

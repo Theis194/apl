@@ -26,7 +26,7 @@ impl Parser {
     }
 
     fn declaration(&mut self) -> Option<Stmt> {
-        let result = if self.check(TokenType::Let) {
+        let result = if self.check(&TokenType::Let) {
             self.variable_declaration()
         } else {
             self.statement()
@@ -58,11 +58,14 @@ impl Parser {
         self.previous()
     }
 
-    pub(crate) fn check(&self, token_type: TokenType) -> bool {
+    pub(crate) fn check(&self, token_type: &TokenType) -> bool {
         if self.is_at_end() {
-            false
-        } else {
-            self.peek().token_type == token_type
+            return false;
+        }
+
+        match (&self.peek().token_type, &token_type) {
+            (TokenType::Identifier(_), TokenType::Identifier(_)) => true,
+            (a, b) => a == *b,
         }
     }
 
@@ -71,16 +74,33 @@ impl Parser {
         token_type: TokenType,
         message: &str,
     ) -> Result<&Token, String> {
-        if self.check(token_type) {
+        if self.check(&token_type) {
             Ok(self.advance())
         } else {
-            Err(format!("{} at line {}", message, self.peek().line))
+            Err(format!(
+                "{} at line {}. Expected {:?}, found {:?}",
+                message,
+                self.peek().line,
+                token_type,
+                self.peek().token_type
+            ))
         }
     }
 
     pub(crate) fn check_sequence(&self, sequence: &[TokenType]) -> bool {
-        sequence.iter().enumerate().all(|(i, tt)| {
-            self.peek_n(i).map(|t| &t.token_type) == Some(tt)
-        })
+        sequence
+            .iter()
+            .enumerate()
+            .all(|(i, tt)| self.peek_n(i).map(|t| &t.token_type) == Some(tt))
+    }
+
+    pub(crate) fn parse_identifier(&mut self, message: &str) -> Result<String, String> {
+        Ok(self
+            .consume(
+                TokenType::Identifier("".to_string()),
+                message,
+            )?
+            .lexeme
+            .clone())
     }
 }

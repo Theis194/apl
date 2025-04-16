@@ -6,7 +6,7 @@ pub use variable_decl::VariableDecl;
 
 use super::Expr;
 
-
+#[derive(Debug, PartialEq)]
 pub enum Stmt {
     VariableDecl(VariableDecl),
     Expression(Expr),

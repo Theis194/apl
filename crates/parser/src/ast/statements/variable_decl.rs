@@ -1,5 +1,6 @@
 use super::super::Expr;
 
+#[derive(Debug, PartialEq)]
 pub struct VariableDecl {
     name: String,
     initializer: Expr,

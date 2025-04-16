@@ -3,13 +3,14 @@ use apl_derive::New;
 
 use super::Expr;
 
-#[derive(New)]
+#[derive(New, PartialEq, Debug)]
 pub struct BinaryExpr {
     left: Box<Expr>,
     op: BinaryOp,
     right: Box<Expr>,
 }
 
+#[derive(Debug, PartialEq)]
 pub enum BinaryOp {
     // Math
     Add,

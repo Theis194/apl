@@ -9,7 +9,7 @@ impl Parser {
     pub(crate) fn equality(&mut self) -> Result<Expr, String> {
         let mut expr = self.primary()?;
 
-        while self.check(TokenType::EqualsEquals) || self.check(TokenType::BangEquals) {
+        while self.check(&TokenType::EqualsEquals) || self.check(&TokenType::BangEquals) {
             let operator = self.advance().clone();
             let right = self.primary()?;
             expr = Expr::Binary(BinaryExpr::new(
@@ -39,12 +39,32 @@ impl Parser {
     }
 
     pub(crate) fn parse_call_expression(&mut self) -> Result<Expr, String> {
-        let identifier = self
-            .consume(
-                TokenType::Identifier("".to_string()),
-                "Expected an identifier",
-            )?
-            .clone();
+        if self.check_sequence(&[
+            TokenType::Identifier("".to_string()),
+            TokenType::ParenthesesOpen,
+        ]) {
+            self.parse_function_call()
+        } else if self.check_sequence(&[
+            TokenType::Identifier("".to_string()),
+            TokenType::Dot,
+            ]) {
+            self.parse_method_call()
+        } else {
+            Err("Unknown token in call expression".to_string())
+        }
+    }
+
+    fn parse_function_call(&mut self) -> Result<Expr, String> {
+        let function_name = self.parse_identifier("Expected function name");
+        todo!()
+    }
+
+    fn parse_method_call(&mut self) -> Result<Expr, String> {
+        let object_name = self.parse_identifier("Expected method name");
+        todo!()
+    }
+
+    pub(crate) fn parse_expression(&mut self) -> Result<Expr, String> {
         todo!()
     }
 }

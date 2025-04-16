@@ -2,7 +2,7 @@ use apl_derive::New;
 
 use crate::ast::node::{AstNode, Statement};
 
-#[derive(Debug, New)]
+#[derive(Debug, New, PartialEq)]
 pub struct Variable {
     pub name: String,
 }
