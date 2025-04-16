@@ -38,7 +38,7 @@ impl BinaryOp {
             TokenType::Divide => Ok(BinaryOp::Divide),
             TokenType::Modulo => Ok(BinaryOp::Modulo),
             // Boolean
-            TokenType::Equals => Ok(BinaryOp::Equal),
+            TokenType::EqualsEquals => Ok(BinaryOp::Equal),
             TokenType::BangEquals => Ok(BinaryOp::NotEqual),
             TokenType::GreaterThan => Ok(BinaryOp::Greater),
             TokenType::GreaterThanOrEqual => Ok(BinaryOp::GreaterEqual),

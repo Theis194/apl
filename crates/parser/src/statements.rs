@@ -24,7 +24,6 @@ impl Parser {
                     self.parse_assignment_or_expression()
                 }
             },
-            TokenType::Let => self.parse_variable_declaration(),
             _ => Err("Unexpected statement".to_string()),
         }
     }
@@ -75,17 +74,5 @@ impl Parser {
 
     fn parse_assignment_or_expression(&mut self) -> Result<Stmt, String> {
         todo!()
-    }
-
-    fn parse_variable_declaration(&mut self) -> Result<Stmt, String> {
-        self.consume(TokenType::Let, "Expected keyword 'let'")?;
-
-        let name = self.parse_identifier("Expected variable name")?;
-
-        self.consume(TokenType::Equals, "Expected '='")?;
-
-        let initializer = self.parse_expression()?;
-
-        Ok(Stmt::VariableDecl(VariableDecl::new(name, initializer)))
     }
 }
