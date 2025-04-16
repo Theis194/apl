@@ -37,4 +37,14 @@ impl Parser {
             _ => Err("Expected expression".to_string()),
         }
     }
+
+    pub(crate) fn parse_call_expression(&mut self) -> Result<Expr, String> {
+        let identifier = self
+            .consume(
+                TokenType::Identifier("".to_string()),
+                "Expected an identifier",
+            )?
+            .clone();
+        todo!()
+    }
 }

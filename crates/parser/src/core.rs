@@ -39,6 +39,10 @@ impl Parser {
         &self.tokens[self.current]
     }
 
+    pub(crate) fn peek_n(&self, n: usize) -> Option<&Token> {
+        self.tokens.get(self.current + n)
+    }
+
     pub(crate) fn previous(&self) -> &Token {
         &self.tokens[self.current - 1]
     }
@@ -72,5 +76,11 @@ impl Parser {
         } else {
             Err(format!("{} at line {}", message, self.peek().line))
         }
+    }
+
+    pub(crate) fn check_sequence(&self, sequence: &[TokenType]) -> bool {
+        sequence.iter().enumerate().all(|(i, tt)| {
+            self.peek_n(i).map(|t| &t.token_type) == Some(tt)
+        })
     }
 }
