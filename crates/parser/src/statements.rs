@@ -1,6 +1,4 @@
-use std::process::id;
-
-use crate::ast::{Function, VariableDecl};
+use crate::ast::Function;
 
 use super::{Parser, Stmt};
 use apl_scanner::{Token, TokenType};
@@ -9,21 +7,6 @@ impl Parser {
     pub(crate) fn statement(&mut self) -> Result<Stmt, String> {
         match &self.peek().token_type {
             TokenType::Function => self.parse_function_declaration(),
-            TokenType::Identifier(_) => {
-                if self.check_sequence(&[
-                    TokenType::Identifier("".to_string()),
-                    TokenType::ParenthesesOpen,
-                ]) || self.check_sequence(&[
-                    TokenType::Identifier("".to_string()),
-                    TokenType::Dot,
-                    TokenType::Identifier("".to_string()),
-                    TokenType::ParenthesesOpen,
-                ]) {
-                    Ok(Stmt::Expression(self.parse_call_expression()?))
-                } else {
-                    self.parse_assignment_or_expression()
-                }
-            },
             _ => Err("Unexpected statement".to_string()),
         }
     }
