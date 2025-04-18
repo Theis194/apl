@@ -6,6 +6,7 @@ use apl_scanner::{Token, TokenType};
 impl Parser {
     pub(crate) fn statement(&mut self) -> Result<Stmt, String> {
         match &self.peek().token_type {
+            TokenType::Let => self.variable_declaration(),
             TokenType::Function => self.parse_function_declaration(),
             _ => Err("Unexpected statement".to_string()),
         }

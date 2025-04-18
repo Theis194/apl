@@ -17,22 +17,14 @@ impl Parser {
         let mut statements = Vec::new();
 
         while !self.is_at_end() {
-            if let Some(stmt) = self.declaration() {
-                statements.push(stmt);
-            }
+            let stmt = match self.statement() {
+                Ok(stmt) => stmt,
+                Err(e) => panic!("{}", e)
+            };
+            statements.push(stmt);
         }
 
         statements
-    }
-
-    fn declaration(&mut self) -> Option<Stmt> {
-        let result = if self.check(&TokenType::Let) {
-            self.variable_declaration()
-        } else {
-            self.statement()
-        };
-
-        result.ok()
     }
 
     pub(crate) fn peek(&self) -> &Token {
