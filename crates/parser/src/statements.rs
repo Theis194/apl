@@ -8,6 +8,9 @@ impl Parser {
         match &self.peek().token_type {
             TokenType::Let => self.variable_declaration(),
             TokenType::Function => self.parse_function_declaration(),
+            TokenType::For => self.parse_for_loop(),
+            TokenType::While => self.parse_while_loop(),
+            TokenType::Loop => self.parse_loop(),
             _ => Err("Unexpected statement".to_string()),
         }
     }
@@ -56,7 +59,15 @@ impl Parser {
         Ok(Stmt::FunctionDecl(Function::new(ident, params, body)))
     }
 
-    fn parse_assignment_or_expression(&mut self) -> Result<Stmt, String> {
+    fn parse_for_loop(&mut self) -> Result<Stmt, String> {
+        todo!()
+    }
+
+    fn parse_while_loop(&mut self) -> Result<Stmt, String> {
+        todo!()
+    }
+
+    fn parse_loop(&mut self) -> Result<Stmt, String> {
         todo!()
     }
 }

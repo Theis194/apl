@@ -210,6 +210,7 @@ impl<'a> Scanner<'a> {
             "if" => TokenType::If,
             "for" => TokenType::For,
             "while" => TokenType::While,
+            "loop" => TokenType::Loop,
             "fn" => TokenType::Function,
             _ => TokenType::Identifier(self.current_lexeme.clone()),
         }
